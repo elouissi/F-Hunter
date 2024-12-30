@@ -1,0 +1,22 @@
+.input-class {
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 0.625rem;
+  border-radius: 0.375rem;
+  width: 100%;
+}
+
+.btn-class {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.625rem;
+  border-radius: 0.375rem;
+  text-align: center;
+  width: 100%;
+}
+
+.link-class {
+  color: #2563eb;
+  text-decoration: underline;
+}

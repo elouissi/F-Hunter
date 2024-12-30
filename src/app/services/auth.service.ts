@@ -1,47 +1,42 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import {Observable, tap} from 'rxjs';
 
+
+
+export interface LoginResponse {
+  token: string;
+}
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {
-  private readonly API_URL = 'https://localhost:8443/api/V2/auth/keycloak-login'; // Remplacez par votre URL d'API
-  private currentUserSubject = new BehaviorSubject<any>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private baseUrl = 'https://localhost:8443/api/V2/auth/authentication';
 
-  constructor(private http: HttpClient) {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      this.currentUserSubject.next(JSON.parse(storedUser));
-    }
-  }
+  constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.API_URL}`, { username, password })
-      .pipe(
-        tap(response => {
-          localStorage.setItem('currentUser', JSON.stringify(response));
-          this.currentUserSubject.next(response);
-        })
-      );
-  }
+  login(email: string, password: string): Observable<LoginResponse> {
+    const data = { email, password };
 
-  register(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.API_URL}`, { username, password });
+    return this.http.post<LoginResponse>(`${this.baseUrl}`, data).pipe(
+      // Save the token to localStorage when login is successful
+      tap((response) => {
+        if (response && response.token) {
+          localStorage.setItem('currentUser', response.token); // Store the token
+        }
+      })
+    );
   }
 
   logout(): void {
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
+    localStorage.removeItem('currentUser'); // Remove the token from localStorage
   }
 
   isAuthenticated(): boolean {
-    return !!this.currentUserSubject.value;
+    return !!localStorage.getItem('currentUser'); // Check if token exists in localStorage
   }
 
-  getToken() {
-    return localStorage.getItem('currentUser');
+  getToken(): string | null {
+    return localStorage.getItem('currentUser'); // Retrieve the token from localStorage
   }
 }
