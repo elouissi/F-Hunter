@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { RegistrationService } from '../../services/register.auth';
 import { CommonModule } from "@angular/common";
-import { RouterLink } from "@angular/router";
 import { HttpClientModule } from "@angular/common/http";
+import {Router, RouterLink} from '@angular/router';
+import {futureDateValidator} from "../../services/date.check";
+
 
 @Component({
   selector: 'app-registration',
@@ -17,7 +19,8 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private registrationService: RegistrationService
+    private registrationService: RegistrationService,
+    private router: Router
   ) {
     // @ts-ignore
 
@@ -56,7 +59,9 @@ export class RegisterComponent {
           Validators.email
         ]
       ],
-      licenseExpiration : ['',Validators.required],
+      licenseExpirationDate : ['',
+        [Validators.required, futureDateValidator()]
+      ],
     });
   }
 
@@ -66,8 +71,8 @@ export class RegisterComponent {
       console.log(this.registrationForm.value);
 
       this.registrationService.register(this.registrationForm.value).subscribe({
-        next: (response) => {
-          console.log('Registration successful', response);
+        next: ()=> {
+          this.router.navigate(['/']);
         },
         error: (error) => {
           console.error('Registration failed', error);

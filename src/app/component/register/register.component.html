@@ -58,23 +58,32 @@
 
           <!-- License Expiration -->
           <div>
-            <label for="licenseExpiration" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">License Expiration</label>
-            <input type="date" id="licenseExpiration" formControlName="licenseExpiration" class="input-class" required>
-            <div *ngIf="registrationForm.get('licenseExpiration')?.invalid && registrationForm.get('licenseExpiration')?.touched">
-              <small class="text-red-600" *ngIf="registrationForm.get('licenseExpiration')?.errors?.['required']">licenseExpiration is required.</small>
-            </div>
+            <label for="licenseExpirationDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">License Expiration</label>
+            <input type="datetime-local" id="licenseExpirationDate" formControlName="licenseExpirationDate" class="input-class" required>
+            <div *ngIf="registrationForm.get('licenseExpirationDate')?.invalid && registrationForm.get('licenseExpirationDate')?.touched">
+              <small class="text-red-600" *ngIf="registrationForm.get('licenseExpirationDate')?.errors?.['required']">License expiration date is required.</small>
+              <small class="text-red-600" *ngIf="registrationForm.get('licenseExpirationDate')?.errors?.['futureDate']">License expiration date should be in the future.</small>            </div>
           </div>
 
           <!-- Email -->
           <div>
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Email</label>
             <input type="email" id="email" formControlName="email" class="input-class" required>
+            <div *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched">
+              <small class="text-red-600" *ngIf="registrationForm.get('email')?.errors?.['required']">email is required.</small>
+              <small  class="text-red-600" *ngIf="registrationForm.get('email')?.errors?.['email']">email must be email.</small>
+            </div>
           </div>
 
           <!-- Password -->
           <div>
             <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
             <input type="password" id="password" formControlName="password" class="input-class" required>
+            <div *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched">
+              <small class="text-red-600" *ngIf="registrationForm.get('password')?.errors?.['required']">password is required.</small>
+              <small  class="text-red-600" *ngIf="registrationForm.get('password')?.errors?.['minlength']">Minimum 8 characters required.</small>
+              <small  class="text-red-600" *ngIf="registrationForm.get('password')?.errors?.['pattern']">password must be alphanumeric.</small>
+            </div>
           </div>
 
           <button type="submit" class="btn-class">Create an account</button>

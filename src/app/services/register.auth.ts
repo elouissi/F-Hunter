@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, tap} from 'rxjs';
 
 interface RegistrationData {
   username: string;
@@ -8,9 +8,12 @@ interface RegistrationData {
   lastName: string;
   cin: string;
   nationality: string;
-  licenseExpiration: string;
+  licenseExpirationDate: Date;
   email: string;
   password: string;
+}
+export interface RegisterResponse {
+  token: string;
 }
 
 @Injectable({
@@ -23,6 +26,12 @@ export class RegistrationService {
   constructor(private http: HttpClient) {}
 
   register(data: RegistrationData): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, data);
+    return this.http.post<RegisterResponse>(`${this.baseUrl}/register`, data).pipe(
+      tap((response) => {
+        if (response && response.token) {
+          localStorage.setItem('currentUser', response.token);
+        }
+      })
+    );
   }
 }
