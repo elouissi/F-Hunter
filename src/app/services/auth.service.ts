@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
+import {jwtDecode, JwtPayload} from "jwt-decode";
 
 
 
 export interface LoginResponse {
   token: string;
+}
+export interface CustomJwtPayload extends JwtPayload {
+  username?: string;
+  role?: string;
 }
 @Injectable({
   providedIn: 'root'
@@ -30,6 +35,36 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('currentUser'); // Remove the token from localStorage
+  }
+  getUserFromToken(): JwtPayload | null {
+    const token = localStorage.getItem('currentUser'); // Récupérer le token du localStorage
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+      return decodedToken; // Retourne les informations décodées
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null;
+    }
+  }
+  getUsername(): string | null {
+    const token = localStorage.getItem('currentUser');
+    if (!token) {
+      console.log("le token not found");
+      return null;
+    }
+
+    try {
+      const decodedToken: CustomJwtPayload = jwtDecode<CustomJwtPayload>(token);
+      console.log(decodedToken.username);
+      return decodedToken.username || null; // Retourne le champ "username" ou null
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null;
+    }
   }
 
   isAuthenticated(): boolean {

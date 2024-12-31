@@ -12,14 +12,27 @@ import {CommonModule} from "@angular/common";
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
+  username: string | null = null;
+
   constructor(private flowbiteService: FlowbiteService,private authService: AuthService) {}
 
+  ngOnInit(): void {
+    this.username = this.authService.getUsername();
+  }
 
   isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
   }
+  getUsername(): string {
+    console.log(this.authService.getUsername());
+    return <string>this.authService.getUsername();
+  }
+
+
+
 
   logout() {
     return this.authService.logout();
+
   }
 }
