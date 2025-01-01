@@ -66,6 +66,20 @@ export class AuthService {
       return null;
     }
   }
+  getRole(): string | null {
+    const token = localStorage.getItem('currentUser');
+    if (!token) {
+      return null;
+    }
+    try {
+      const decodedToken: CustomJwtPayload = jwtDecode<CustomJwtPayload>(token);
+      return decodedToken.role || null;
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null;
+    }
+
+  }
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('currentUser'); // Check if token exists in localStorage

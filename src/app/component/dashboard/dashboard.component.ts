@@ -1,41 +1,22 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { RouterOutlet } from '@angular/router';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterOutlet, SidebarComponent],
   template: `
-    <div class="dashboard-container">
-      <h2>Dashboard</h2>
-      <p>Welcome to your dashboard!</p>
-      <button (click)="logout()">Logout</button>
+    <div class="flex h-screen bg-gray-100">
+      <app-sidebar></app-sidebar>
+      <div class="flex-1 overflow-x-hidden overflow-y-auto">
+        <main class="p-6">
+          <router-outlet></router-outlet>
+        </main>
+      </div>
     </div>
   `,
-  styles: [`
-    .dashboard-container {
-      padding: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  `]
 })
-export class DashboardComponent {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+export class DashboardComponent {}
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-}
