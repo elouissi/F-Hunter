@@ -1,1 +1,146 @@
-<p>competitions works!</p>
+<div class="bg-white shadow-md rounded-lg p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-2xl font-semibold">Compétitions</h2>
+    <button data-modal-target="create-modal" data-modal-toggle="create-modal"
+            class="text-white bg-green-600 hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            type="button">
+      Create
+    </button>
+  </div>
+  <div *ngIf="errorMessage" class="alert text-red-700 alert-danger">
+    {{ errorMessage }}
+  </div>
+  <div *ngIf="isLoading" class="loading-spinner">
+      <div class="loader border-t-4 border-blue-500 rounded-full w-16 h-16 animate-spin mx-auto"></div>
+      <p class="mt-4 text-gray-600">Loading competitions...</p>
+    </div>
+
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+    <tr>
+      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lieu</th>
+      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
+      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+    </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+    <tr *ngFor="let competition of competitions">
+      <td class="px-6 py-4 whitespace-nowrap">{{ competition.code }}</td>
+      <td class="px-6 py-4 whitespace-nowrap">{{ competition.location }}</td>
+      <td class="px-6 py-4 whitespace-nowrap">{{ competition.date | date }}</td>
+      <td class="px-6 py-4 whitespace-nowrap">{{ competition.speciesType }}</td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        {{ competition.minParticipants }} - {{ competition.maxParticipants }}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
+        <!-- Icon for Edit -->
+        <button class="text-indigo-600 hover:text-indigo-900 flex items-center">
+          <i class="fas fa-edit mr-1"></i> Éditer
+        </button>
+        <!-- Icon for Delete -->
+        <button
+          class="text-red-600 hover:text-red-900 flex items-center"
+          (click)="deleteCompetition(competition.code)"
+        >
+          <img
+            style="color: red"
+            alt="Delete"
+            ngSrc="../../../../assets/images/delete.png"
+            width="25"
+            height="25"
+            priority
+            color="red"
+          >
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div id="create-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative p-4 w-full max-w-md max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Ajouter une compétition
+        </h3>
+        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="create-modal">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+          <span class="sr-only">Fermer</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="p-4 md:p-5">
+        <form [formGroup]="createForm" (ngSubmit)="addCompetition()" class="space-y-4" action="#" method="POST">
+          <div>
+            <label for="code" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Code</label>
+            <input type="text" formControlName="code" name="code" id="code" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="lieu_YYYY-MM-DD" required />
+            <div *ngIf="createForm.get('code')?.invalid && createForm.get('code')?.touched">
+              <small class="text-red-600" *ngIf="createForm.get('code')?.errors?.['required']">code is required.</small>
+              <small  class="text-red-600" *ngIf="createForm.get('code')?.errors?.['pattern']">code must be alphanumeric.</small>
+            </div>
+          </div>
+          <div>
+            <label for="location" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Lieu</label>
+            <input type="text" formControlName="location" name="location" id="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Lieu de la compétition" required />
+            <div *ngIf="createForm.get('location')?.invalid && createForm.get('location')?.touched">
+              <small class="text-red-600" *ngIf="createForm.get('location')?.errors?.['required']">location is required.</small>
+            </div>
+          </div>
+          <div>
+            <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
+            <input type="datetime-local" formControlName="date" name="date" id="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+            <div *ngIf="createForm.get('date')?.invalid && createForm.get('date')?.touched">
+              <small class="text-red-600" *ngIf="createForm.get('date')?.errors?.['required']">date is required.</small>
+              <small  class="text-red-600" *ngIf="createForm.get('date')?.errors?.['futureDate']">date must be in future.</small>
+
+            </div>
+          </div>
+          <div>
+            <label for="speciesType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type d'espèce</label>
+            <select name="speciesType" formControlName="speciesType" id="speciesType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
+              <option value="" disabled selected>Choisir un type d'espèce</option>
+              <option value="SEA">mer</option>
+              <option value="BIG_GAME">grand match</option>
+              <option value="BIRD">oiseau</option>
+            </select>
+            <div *ngIf="createForm.get('speciesType')?.invalid && createForm.get('speciesType')?.touched">
+              <small class="text-red-600" *ngIf="createForm.get('speciesType')?.errors?.['required']">species Type is required.</small>
+            </div>
+          </div>
+          <div>
+            <label for="minParticipants" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre minimum de participants</label>
+            <input type="number" formControlName="minParticipants" name="minParticipants" id="minParticipants" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" min="0" required />
+            <div *ngIf="createForm.get('speciesType')?.invalid && createForm.get('minParticipants')?.touched">
+              <small class="text-red-600" *ngIf="createForm.get('minParticipants')?.errors?.['required']">minParticipants is required.</small>
+              <small  class="text-red-600" *ngIf="createForm.get('minParticipants')?.errors?.['minlength']">Minimum 1 characters required.</small>
+            </div>
+          </div>
+          <div>
+            <label for="maxParticipants" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre maximum de participants</label>
+            <input type="number" formControlName="maxParticipants" name="maxParticipants" id="maxParticipants" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" min="1" required />
+            <div *ngIf="createForm.get('maxParticipants')?.invalid && createForm.get('maxParticipants')?.touched">
+              <small class="text-red-600" *ngIf="createForm.get('maxParticipants')?.errors?.['required']">maxParticipants is required.</small>
+              <small  class="text-red-600" *ngIf="createForm.get('maxParticipants')?.errors?.['maxlength']">Maximum 10000 characters allowed.</small>
+            </div>
+          </div>
+          <div>
+            <label for="openRegistration" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Inscription ouverte</label>
+            <input type="checkbox" formControlName="openRegistration" name="openRegistration" id="openRegistration" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
+            <div *ngIf="createForm.get('openRegistration')?.invalid && createForm.get('openRegistration')?.touched">
+              <small class="text-red-600" *ngIf="createForm.get('openRegistration')?.errors?.['required']"> is required.</small>
+            </div>
+          </div>
+          <button type="submit"  class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Ajouter</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

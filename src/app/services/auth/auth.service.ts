@@ -11,6 +11,7 @@ export interface LoginResponse {
 export interface CustomJwtPayload extends JwtPayload {
   username?: string;
   role?: string;
+  cin?: string;
 }
 @Injectable({
   providedIn: 'root'
@@ -59,7 +60,6 @@ export class AuthService {
 
     try {
       const decodedToken: CustomJwtPayload = jwtDecode<CustomJwtPayload>(token);
-      console.log(decodedToken.username);
       return decodedToken.username || null; // Retourne le champ "username" ou null
     } catch (error) {
       console.error('Invalid token:', error);
@@ -80,6 +80,21 @@ export class AuthService {
     }
 
   }
+  getCin(): string | null {
+    const token = localStorage.getItem('currentUser');
+    if (!token) {
+      return null;
+    }
+    try {
+      const decodedToken: CustomJwtPayload = jwtDecode<CustomJwtPayload>(token);
+      return decodedToken.cin || null;
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null;
+    }
+
+  }
+
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('currentUser'); // Check if token exists in localStorage

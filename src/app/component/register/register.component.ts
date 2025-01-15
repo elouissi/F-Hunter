@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { RegistrationService } from '../../services/register.auth';
+import { RegistrationService } from '../../services/auth/register.auth';
 import { CommonModule } from "@angular/common";
 import { HttpClientModule } from "@angular/common/http";
 import {Router, RouterLink} from '@angular/router';
-import {futureDateValidator} from "../../services/date.check";
+import {futureDateValidator} from "../../services/utils/date.check";
 
 
 @Component({
@@ -22,7 +22,6 @@ export class RegisterComponent {
     private registrationService: RegistrationService,
     private router: Router
   ) {
-    // @ts-ignore
 
     this.registrationForm = this.fb.group({
       username: [

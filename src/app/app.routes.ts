@@ -6,6 +6,8 @@ import {authGuard} from "./guards/auth.guard";
 import {HomeComponent} from "./component/home/home.component";
 import {CompetitionsComponent} from "./component/dashboard/competitions/competitions.component";
 import {UsersComponent} from "./component/dashboard/users/users.component";
+import {adminGuard} from "./guards/admin.guard";
+import {SpeciesComponent} from "./component/dashboard/species/species.component";
 
 export const routes: Routes = [
   {path: "", component: HomeComponent},
@@ -14,10 +16,13 @@ export const routes: Routes = [
   {path: 'home', component: HomeComponent },
   {
     path: 'dashboard',
+    canActivate :[adminGuard, authGuard],
     component: DashboardComponent,
     children: [
       { path: 'competitions', component: CompetitionsComponent },
       { path: 'users', component: UsersComponent },
+      { path: 'species', component: SpeciesComponent },
+
       { path: '', redirectTo: 'competitions', pathMatch: 'full' },
     ],
   },

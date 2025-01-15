@@ -1,43 +1,114 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, OnInit} from "@angular/core";
+
+import {CommonModule, NgOptimizedImage} from '@angular/common';
+import { Competition, CompetitionService } from "../../../services/competition/competition.service";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule,   Validators } from "@angular/forms";
+import { futureDateValidator } from "../../../services/utils/date.check";
+import { futureDate } from "../../../services/utils/futureDate.service";
 
 @Component({
   selector: 'app-competitions',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4">Compétitions</h2>
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let competition of competitions">
-            <td class="px-6 py-4 whitespace-nowrap">{{ competition.name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ competition.date | date }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <button class="text-indigo-600 hover:text-indigo-900 mr-2">Éditer</button>
-              <button class="text-red-600 hover:text-red-900">Supprimer</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  `,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgOptimizedImage],
+  templateUrl: './competitions.component.html'
 })
 export class CompetitionsComponent implements OnInit {
-  competitions = [
-    { id: 1, name: 'Compétition 1', date: new Date('2023-06-01') },
-    { id: 2, name: 'Compétition 2', date: new Date('2023-07-15') },
-  ];
+  competitions: Competition[] = [];
+  isLoading: boolean = true;
+  errorMessage: string = '';
+  createForm: FormGroup;
 
-  ngOnInit() {
-    // Ici, vous pouvez appeler votre service pour récupérer les données depuis l'API Spring Boot
+  constructor(
+    private competitionService: CompetitionService,
+    private fb: FormBuilder,
+  ) {
+    this.createForm = this.fb.group({
+      code: ['', [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z]+_\d{4}-\d{2}-\d{2}$/)
+      ]],
+      location: ['', Validators.required],
+      date: ['', [
+        Validators.required,
+        futureDate(2)
+      ]],
+      speciesType: ['', Validators.required],
+      minParticipants: ['', [
+        Validators.required,
+        Validators.min(1)
+      ]],
+      maxParticipants: ['', [
+        Validators.required,
+        Validators.max(10000)
+      ]],
+      openRegistration: [null, Validators.required]
+    });
+  }
+
+  ngOnInit(): void {
+    this.fetchAllCompetitions();
+  }
+
+  fetchAllCompetitions(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.competitionService.getCompetitions().subscribe({
+      next: (data) => {
+        console.log(data);
+        this.competitions = data;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.errorMessage = error;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  addCompetition(): void {
+    if (this.createForm.invalid) {
+      this.errorMessage = 'Please check all form fields are valid';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.competitionService.addCompetition(this.createForm.value).subscribe({
+      next: (message) => {
+        alert('Competition created successfully: ' + message);
+        this.createForm.reset();
+        this.fetchAllCompetitions();
+      },
+      error: (error) => {
+        this.errorMessage = error;
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+  deleteCompetition(code: string): void {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la compétition ${code} ?`)) {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      this.competitionService.deleteCompetition(code).subscribe({
+        next: (message) => {
+          alert('Compétition supprimée avec succès');
+          this.ngOnInit();
+          this.competitions.filter(competition => competition.code !== code)
+        },
+        error: (error) => {
+          this.errorMessage = error;
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
+    }
   }
 }
-

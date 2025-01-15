@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from "@angular/router";
-import { FlowbiteService } from "../../services/flowbite.service";
-import {AuthService} from "../../services/auth.service";
+import { FlowbiteService } from "../../services/utils/flowbite.service";
+import {AuthService} from "../../services/auth/auth.service";
 import {CommonModule} from "@angular/common";
 
 @Component({

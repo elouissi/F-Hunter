@@ -1,13 +1,17 @@
+// main.ts
 import { bootstrapApplication } from '@angular/platform-browser';
-import { importProvidersFrom } from '@angular/core';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import { HttpClientModule } from '@angular/common/http';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';  // Import HttpClientModule
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { authInterceptor } from "./app/interceptors/auth.interceptor";
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(HttpClientModule), // Add HttpClientModule here
-    ...appConfig.providers, provideAnimationsAsync(),  // Spread existing providers from appConfig
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    ),
+    ...appConfig.providers,
+    provideAnimationsAsync(),
   ]
 }).catch((err) => console.error(err));

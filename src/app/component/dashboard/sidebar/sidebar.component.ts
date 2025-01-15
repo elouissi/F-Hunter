@@ -43,7 +43,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
             alt="Competition"
             ngSrc="../../../../assets/images/competition.png"
             width="44"
-            height="44">
+            height="44"
+            priority
+          >
+
           <span [class]="isCollapsed ? 'hidden' : 'ml-3'">Compétitions</span>
         </a>
         <a
@@ -56,8 +59,25 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
             alt="users"
             ngSrc="../../../../assets/images/users.png"
             width="44"
-            height="44">          <span [class]="isCollapsed ? 'hidden' : 'ml-3'">Utilisateurs</span>
+            height="44"
+            priority>
+          <span [class]="isCollapsed ? 'hidden' : 'ml-3'">Utilisateurs</span>
         </a>
+        <a
+          routerLink="/dashboard/species"
+          routerLinkActive="bg-gray-700"
+          class="flex items-center py-3 px-4 hover:bg-gray-700 transition-colors"
+        >
+          <img
+            style=""
+            alt="species"
+            ngSrc="../../../../assets/images/species.png"
+            width="44"
+            height="44"
+            priority>
+          <span [class]="isCollapsed ? 'hidden' : 'ml-3'">Species</span>
+        </a>
+
       </nav>
     </aside>
   `,
